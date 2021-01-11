@@ -1,0 +1,16 @@
+{
+    "settings_path" : ".\\settings\\",
+    "data_path" : ".\\datasets\\",
+    "target_object" : "Classifier",
+    "tests" : [
+        {
+            "settings" : "",
+            "bulk_settings" : [
+                ".\\settings\\default_config.json"
+            ],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 250,
+            "training_cutoff_index" : 75
+        }
+    ]
+}

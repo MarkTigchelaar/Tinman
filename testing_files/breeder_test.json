@@ -1,0 +1,14 @@
+{
+    "settings_path" : ".\\settings\\",
+    "data_path" : ".\\datasets\\",
+    "target_object" : "Breeder",
+    "tests" : [
+        {
+            "settings" : ".\\settings\\default_with_weights_config.json",
+            "bulk_settings" : [],
+            "data" : "NA",
+            "rounds" : 0,
+            "training_cutoff_index" : 0
+        }
+    ]
+}

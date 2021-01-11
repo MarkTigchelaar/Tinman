@@ -1,0 +1,18 @@
+{
+    "query_id" : 0,
+    "config_id" : 0,
+    "config_parent_id" : 0,
+    "input_size" : 784,
+    "layers" : [
+        {
+            "output_units" : 10,
+            "learning_rate" : 0.01,
+            "activation_function" : "sigmoid",
+            "activation_fn_code" : 0,
+            "bias" : 0.0,
+            "momentum" : 0.0,
+            "weight_range" : [-1.0,1.0],
+            "layer_weights" : null
+        }
+    ]
+}

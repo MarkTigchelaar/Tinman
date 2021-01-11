@@ -1,0 +1,84 @@
+{
+    "settings_path" : ".\\settings\\",
+    "data_path" : ".\\datasets\\",
+    "target_object" : "NNetTrainer",
+    "tests" : [
+        {
+            "settings" : ".\\settings\\iris_vers_set_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 15,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_2_2_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 300,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_3_2_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 100,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_10_2_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 100,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_2_2_2_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 200,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_5_5_2_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 250,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_2_2_tanh_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 250,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_2_2_sqnl_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 300,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_2_2_arctan_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 250,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_2_lrelu_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 250,
+            "training_cutoff_index" : 75
+        },
+        {
+            "settings" : ".\\settings\\iris_vers_set_2_2_2_lrelu_layer_config.json",
+            "bulk_settings" : [],
+            "data" : ".\\datasets\\setosa_versicolor_iris.json",
+            "rounds" : 250,
+            "training_cutoff_index" : 75
+        }
+    ]
+}
