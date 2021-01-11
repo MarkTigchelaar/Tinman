@@ -73,10 +73,7 @@ impl Layer {
             if current > max_val {
                 max_val = current;
                 max_idx = i as i64;
-               // println!("current winning prediction candidate: {}", current);
-            } //else {
-              //  println!("current prediction candidate: {}", current);
-            //}
+            }
         }
         if max_idx < self.nodes_start_index as i64 {
             max_idx = self.nodes_start_index as i64;
