@@ -1,4 +1,3 @@
-
 use super::activator::Activator;
 
 pub struct Node {

@@ -1,6 +1,9 @@
 
 use std::f64::consts::E;
-
+use super::nnet_errors::{
+    set_act_fn_code_out_of_bounds, 
+    fn_name_not_found
+};
 
 pub struct Activator {
     fn_names : [String; 7],
@@ -73,7 +76,8 @@ impl Activator {
         }
         let bytes = &self.fn_names[fn_code].into_bytes();
         String::from_utf8(bytes.to_vec()).expect("Found invalid UTF-8")
-    }*/
+    }
+*/
 }
 
 fn default(x : f64) -> f64 {
@@ -163,14 +167,4 @@ fn lrelu_prime (x : f64) -> f64 {
         return 0.01
     }
     1.
-}
-
-#[allow(dead_code)]
-fn set_act_fn_code_out_of_bounds () -> String {
-    "\n\nActivator panicked!\n\nAttempt to set activation function code outside listing of activation functions.".to_string()
-}
-
-#[allow(dead_code)]
-fn fn_name_not_found () -> String {
-    "\n\nActivator panicked!\n\nActivation function not found in list of functions.".to_string()
 }

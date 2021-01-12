@@ -13,7 +13,6 @@ pub struct NeuralNetwork {
     input_size : usize,
     layers : Vec<Layer>,
     nodes : Vec<Node>
-    // state_vector : Vec<f64>
 }
 
 impl NeuralNetwork {
