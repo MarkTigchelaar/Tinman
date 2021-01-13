@@ -1,4 +1,4 @@
-use super::super::DataAndConfig::neural_net_config_parts::LayerSettings;
+use super::super::data_and_config::neural_net_config_parts::LayerSettings;
 use super::node::Node;
 use super::nnet_errors::{
     weights_input_len_mismatch, 

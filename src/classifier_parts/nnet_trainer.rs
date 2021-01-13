@@ -1,6 +1,6 @@
-use super::super::NeuralNetworkParts::neural_network::NeuralNetwork;
-use super::super::DataAndConfig::neural_net_config_parts::NeuralNetSettings;
-use super::super::DataAndConfig::dataset::{DataSet, Row};
+use super::super::neural_network_parts::neural_network::NeuralNetwork;
+use super::super::data_and_config::neural_net_config_parts::NeuralNetSettings;
+use super::super::data_and_config::dataset::{DataSet, Row};
 use super::index_manager::IndexManager;
 
 pub struct NNetTrainer {

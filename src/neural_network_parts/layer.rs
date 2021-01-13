@@ -1,6 +1,6 @@
 use super::activator::Activator;
 use super::node::Node;
-use super::super::DataAndConfig::neural_net_config_parts::LayerSettings;
+use super::super::data_and_config::neural_net_config_parts::LayerSettings;
 
 
 pub struct Layer {
@@ -78,7 +78,7 @@ impl Layer {
         if max_idx < self.nodes_start_index as i64 {
             max_idx = self.nodes_start_index as i64;
         } else {
-            max_idx - self.nodes_start_index as i64;
+            max_idx -= self.nodes_start_index as i64;
         }
         max_idx
     }

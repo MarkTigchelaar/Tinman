@@ -3,7 +3,7 @@ use super::node::Node;
 use super::layer::Layer;
 use super::make_new_nodes::make_new_nodes;
 use super::nnet_errors::failed_prediction;
-use super::super::DataAndConfig::neural_net_config_parts::NeuralNetSettings;
+use super::super::data_and_config::neural_net_config_parts::NeuralNetSettings;
 
 
 pub struct NeuralNetwork {

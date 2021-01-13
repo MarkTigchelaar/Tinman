@@ -1,4 +1,4 @@
-use super::super::DataAndConfig::neural_net_config_parts::NeuralNetSettings;
+use super::super::data_and_config::neural_net_config_parts::NeuralNetSettings;
 use super::classifier_errors::{
     ga_missing_weights_error, 
     sa_missing_weights_error
@@ -107,23 +107,23 @@ impl Breeder {
                 if self.hyper_parameters[i] == "learning_rate".to_string() {
                     child_w_average = child.layers[j].learning_rate * favoured;
                     p2_w_average = parent2.layers[j].learning_rate * (1.0 - favoured);
-                    child.layers[j].learning_rate = (child_w_average + p2_w_average);
+                    child.layers[j].learning_rate = child_w_average + p2_w_average;
                 } else if self.hyper_parameters[i] == "bias".to_string() {
                     child_w_average = child.layers[j].bias * favoured;
                     p2_w_average = parent2.layers[j].bias * (1.0 - favoured);
-                    child.layers[j].bias = (child_w_average + p2_w_average);
+                    child.layers[j].bias = child_w_average + p2_w_average;
                 } else if self.hyper_parameters[i] == "momentum".to_string() {
                     child_w_average = child.layers[j].momentum * favoured;
                     p2_w_average = parent2.layers[j].momentum * (1.0 - favoured);
-                    child.layers[j].momentum = (child_w_average + p2_w_average);
+                    child.layers[j].momentum = child_w_average + p2_w_average;
                 } else if self.hyper_parameters[i] == "upper_weight_limit".to_string() {
                     child_w_average = child.layers[j].weight_range[1] * favoured;
                     p2_w_average = parent2.layers[j].weight_range[1] * (1.0 - favoured);
-                    child.layers[j].weight_range[1] = (child_w_average + p2_w_average);
+                    child.layers[j].weight_range[1] = child_w_average + p2_w_average;
                 } else if self.hyper_parameters[i] == "lower_weight_limit".to_string() {
                     child_w_average = child.layers[j].weight_range[0] * favoured;
                     p2_w_average = parent2.layers[j].weight_range[0] * (1.0 - favoured);
-                    child.layers[j].weight_range[0] = (child_w_average + p2_w_average);
+                    child.layers[j].weight_range[0] = child_w_average + p2_w_average;
                     if child.layers[j].weight_range[0] >= child.layers[j].weight_range[1] {
                         child.layers[j].weight_range[1] = child.layers[j].weight_range[0] + 0.1;
                     }
@@ -218,7 +218,7 @@ impl Breeder {
         self.current_p1_favourability <= self.min_p1_favourability
     }
 
-    pub fn min_GA_mutations_reached(&mut self) -> bool {
+    pub fn min_ga_mutations_reached(&mut self) -> bool {
         self.max_current_p1_favourability <= self.min_p1_favourability
     }
 
@@ -241,7 +241,7 @@ impl Breeder {
         self.current_annealing_temp <= self.min_annealing_temp
     }
 
-    pub fn min_SA_mutations_reached(&mut self) -> bool {
+    pub fn min_sa_mutations_reached(&mut self) -> bool {
         self.max_current_annealing_temp <= self.min_annealing_temp
     }
 

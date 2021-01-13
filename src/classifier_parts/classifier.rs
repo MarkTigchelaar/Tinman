@@ -1,7 +1,7 @@
-use super::super::DataAndConfig::neural_net_config_parts::NeuralNetSettings;
-use super::super::DataAndConfig::dataset::{DataSet, Row};
-use super::super::ClassifierParts::breeder::Breeder;
-use super::super::ClassifierParts::nnet_trainer::NNetTrainer;
+use super::super::data_and_config::neural_net_config_parts::NeuralNetSettings;
+use super::super::data_and_config::dataset::DataSet;
+use super::super::classifier_parts::breeder::Breeder;
+use super::super::classifier_parts::nnet_trainer::NNetTrainer;
 
 extern crate rayon;
 
@@ -13,7 +13,6 @@ pub struct Classifier {
     test_train_cutoff_idx : usize,
     training_rounds_per_train_epoch : usize,
     max_train_epochs_per_config_epoch : usize,
-    min_accuracy_increase_to_continue : f64,
     max_config_epochs : usize,
     final_number_of_nnets : usize,
     winners_per_round : usize,
@@ -29,7 +28,6 @@ impl Classifier {
             test_train_cutoff_idx : 75,
             training_rounds_per_train_epoch : 1,
             max_train_epochs_per_config_epoch : 1,
-            min_accuracy_increase_to_continue : 0.01,
             max_config_epochs : 1,
             final_number_of_nnets : 1,
             winners_per_round : 2,
@@ -51,7 +49,7 @@ impl Classifier {
                 let tuned_settings : Vec<NeuralNetSettings> = self.train_for_hyper_parameters(data);
                 self.breeder.total_reset();
                 for i in 0 .. tuned_settings.len() {
-                    let mut serialized = serde_json::to_string(&tuned_settings[i]).unwrap();
+                    let serialized = serde_json::to_string(&tuned_settings[i]).unwrap();
                     println!("{}",str::from_utf8(&serialized.as_bytes()).unwrap());
                 }
                 
@@ -65,16 +63,16 @@ impl Classifier {
         winners.push(self.ancestor.clone());
         while !
         (
-            self.breeder.min_GA_mutations_reached() || 
-            self.breeder.min_SA_mutations_reached()
+            self.breeder.min_ga_mutations_reached() || 
+            self.breeder.min_sa_mutations_reached()
         ) 
         {
-            self.train_hyper_parameters_w_SA(
+            self.train_hyper_parameters_w_sa(
                 &mut trainee_configs, 
                 &mut winners, 
                 data
             );
-            self.train_hyper_parameters_w_GA(
+            self.train_hyper_parameters_w_ga(
                 &mut trainee_configs, 
                 &mut winners, 
                 data
@@ -86,7 +84,7 @@ impl Classifier {
     pub fn train_batch(&mut self, settings : &Vec<NeuralNetSettings>, data : &DataSet) -> Vec<NNetTrainer> {
         let tc : usize = self.test_train_cutoff_idx;
         let tr : usize = self.training_rounds_per_train_epoch;
-        let mut trainers : Vec<NNetTrainer> = settings
+        let trainers : Vec<NNetTrainer> = settings
             .par_iter()
             .map( |x| train_single(x, data, tc, tr) )
             .collect();
@@ -104,7 +102,7 @@ impl Classifier {
         winners : &mut Vec<NeuralNetSettings>
     ) {
         winners.clear();
-        let mut winner_ids : Vec<usize> = self.get_winner_ids(trainers);
+        let winner_ids : Vec<usize> = self.get_winner_ids(trainers);
         for i in 0 .. trainee_configs.len() {
             for j in 0 .. winner_ids.len() {
                 if trainee_configs[i].config_id == winner_ids[j] {
@@ -140,7 +138,7 @@ impl Classifier {
         winner_ids
     }
 
-    fn train_hyper_parameters_w_SA(
+    fn train_hyper_parameters_w_sa(
         &mut self, 
         trainee_configs : &mut Vec<NeuralNetSettings>, 
         winners : &mut Vec<NeuralNetSettings>,
@@ -161,7 +159,7 @@ impl Classifier {
         self.get_winners(&mut trainers, trainee_configs, winners);
     }
 
-    fn train_hyper_parameters_w_GA(
+    fn train_hyper_parameters_w_ga(
         &mut self, 
         trainee_configs : &mut Vec<NeuralNetSettings>, 
         winners : &mut Vec<NeuralNetSettings>,
