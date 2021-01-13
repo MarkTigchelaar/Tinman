@@ -18,7 +18,11 @@ pub struct Breeder {
     favourability_drop : f64,
     generation : usize,
     current_config_id : usize,
-    hyper_parameters : [String; 5],
+    alter_learning_rate : bool,
+    alter_bias : bool,
+    alter_momentum : bool,
+    alter_upper_weight_limit : bool,
+    alter_lower_weight_limit : bool
 }
 
 impl Breeder {
@@ -36,13 +40,11 @@ impl Breeder {
             favourability_drop : fave_drop,
             generation : 0,
             current_config_id : 0,
-            hyper_parameters : [
-                "learning_rate".to_string(),
-                "bias".to_string(),
-                "momentum".to_string(),
-                "upper_weight_limit".to_string(),
-                "lower_weight_limit".to_string()
-            ]
+            alter_learning_rate : true,
+            alter_bias : true,
+            alter_momentum : true,
+            alter_upper_weight_limit : true,
+            alter_lower_weight_limit : true
         }
     }
 
@@ -51,40 +53,45 @@ impl Breeder {
         let mut rng = rand::thread_rng();
         let mut rand_float = rand::thread_rng();
         for j in 0 .. child.layers.len() {
-            for i in 0 .. self.hyper_parameters.len() {
-                let mutation : f64 = rand_float.gen_range(0.0, self.current_annealing_temp);
-                let rand : usize = rng.gen_range(0, 1);
-                let mut sign : f64 = 1.0;
-                if rand == 0 {
-                    sign = -1.0;
+            let mutation : f64 = rand_float.gen_range(0.0, self.current_annealing_temp);
+            let rand : usize = rng.gen_range(0, 1);
+            let mut sign : f64 = 1.0;
+            if rand == 0 {
+                sign = -1.0;
+            }
+            if self.alter_learning_rate == true {
+                if child.layers[j].learning_rate + sign * mutation > 0.0 {
+                    child.layers[j].learning_rate += sign * mutation;
+                } else {
+                    child.layers[j].learning_rate -= sign * mutation;
                 }
-                if self.hyper_parameters[i] == "learning_rate".to_string() {
-                    if child.layers[j].learning_rate + sign * mutation > 0.0 {
-                        child.layers[j].learning_rate += sign * mutation;
-                    } else {
-                        child.layers[j].learning_rate -= sign * mutation;
-                    }
-                } else if self.hyper_parameters[i] == "bias".to_string() {
-                    child.layers[j].bias += sign * mutation;
-                } else if self.hyper_parameters[i] == "momentum".to_string() {
-                    if child.layers[j].momentum + sign * mutation > 0.0 {
-                        child.layers[j].momentum += sign * mutation;
-                    } else {
-                        child.layers[j].momentum -= sign * mutation;
-                    }
-                } else if self.hyper_parameters[i] == "upper_weight_limit".to_string() {
-                    child.layers[j].weight_range[1] += sign * mutation;
-                    if child.layers[j].weight_range[1] > 1.0 {
-                        child.layers[j].weight_range[1] = 1.0;
-                    }
-                } else if self.hyper_parameters[i] == "lower_weight_limit".to_string() {
-                    child.layers[j].weight_range[0] += sign * mutation;
-                    if child.layers[j].weight_range[0] < -1.0 {
-                        child.layers[j].weight_range[0] = -1.0;
-                    }
-                    if child.layers[j].weight_range[0] >= child.layers[j].weight_range[1] {
-                        child.layers[j].weight_range[1] = child.layers[j].weight_range[0] + 0.1;
-                    }
+            }
+            if self.alter_bias == true {
+                child.layers[j].bias += sign * mutation;
+            }
+            if self.alter_momentum == true {
+                if child.layers[j].momentum + sign * mutation > 0.0 {
+                    child.layers[j].momentum += sign * mutation;
+                } else {
+                    child.layers[j].momentum -= sign * mutation;
+                }
+            }
+            if self.alter_upper_weight_limit == true {
+                if child.layers[j].weight_range[1] + sign * mutation <= 0.0 {
+                    sign *= -1.0;
+                }
+                child.layers[j].weight_range[1] += sign * mutation;
+                if child.layers[j].weight_range[1] > 1.0 {
+                    child.layers[j].weight_range[1] = 1.0;
+                }
+            }
+            if self.alter_lower_weight_limit == true {
+                child.layers[j].weight_range[0] += sign * mutation;
+                if child.layers[j].weight_range[0] < -1.0 {
+                    child.layers[j].weight_range[0] = -1.0;
+                }
+                if child.layers[j].weight_range[0] >= child.layers[j].weight_range[1] {
+                    child.layers[j].weight_range[1] = child.layers[j].weight_range[0] + 0.1;
                 }
             }
         }
@@ -100,33 +107,35 @@ impl Breeder {
     )
     {
         for j in 0 .. child.layers.len() {
-            for i in 0 .. self.hyper_parameters.len() {
-                let child_w_average : f64;
-                let p2_w_average : f64;
-                let favoured : f64 = self.current_p1_favourability;
-                if self.hyper_parameters[i] == "learning_rate".to_string() {
-                    child_w_average = child.layers[j].learning_rate * favoured;
-                    p2_w_average = parent2.layers[j].learning_rate * (1.0 - favoured);
-                    child.layers[j].learning_rate = child_w_average + p2_w_average;
-                } else if self.hyper_parameters[i] == "bias".to_string() {
-                    child_w_average = child.layers[j].bias * favoured;
-                    p2_w_average = parent2.layers[j].bias * (1.0 - favoured);
-                    child.layers[j].bias = child_w_average + p2_w_average;
-                } else if self.hyper_parameters[i] == "momentum".to_string() {
-                    child_w_average = child.layers[j].momentum * favoured;
-                    p2_w_average = parent2.layers[j].momentum * (1.0 - favoured);
-                    child.layers[j].momentum = child_w_average + p2_w_average;
-                } else if self.hyper_parameters[i] == "upper_weight_limit".to_string() {
-                    child_w_average = child.layers[j].weight_range[1] * favoured;
-                    p2_w_average = parent2.layers[j].weight_range[1] * (1.0 - favoured);
-                    child.layers[j].weight_range[1] = child_w_average + p2_w_average;
-                } else if self.hyper_parameters[i] == "lower_weight_limit".to_string() {
-                    child_w_average = child.layers[j].weight_range[0] * favoured;
-                    p2_w_average = parent2.layers[j].weight_range[0] * (1.0 - favoured);
-                    child.layers[j].weight_range[0] = child_w_average + p2_w_average;
-                    if child.layers[j].weight_range[0] >= child.layers[j].weight_range[1] {
-                        child.layers[j].weight_range[1] = child.layers[j].weight_range[0] + 0.1;
-                    }
+            let mut child_w_average : f64;
+            let mut p2_w_average : f64;
+            let favoured : f64 = self.current_p1_favourability;
+            if self.alter_learning_rate == true {
+                child_w_average = child.layers[j].learning_rate * favoured;
+                p2_w_average = parent2.layers[j].learning_rate * (1.0 - favoured);
+                child.layers[j].learning_rate = child_w_average + p2_w_average;
+            }
+            if self.alter_bias == true {
+                child_w_average = child.layers[j].bias * favoured;
+                p2_w_average = parent2.layers[j].bias * (1.0 - favoured);
+                child.layers[j].bias = child_w_average + p2_w_average;
+            }
+            if self.alter_momentum == true {
+                child_w_average = child.layers[j].momentum * favoured;
+                p2_w_average = parent2.layers[j].momentum * (1.0 - favoured);
+                child.layers[j].momentum = child_w_average + p2_w_average;
+            }
+            if self.alter_upper_weight_limit == true {
+                child_w_average = child.layers[j].weight_range[1] * favoured;
+                p2_w_average = parent2.layers[j].weight_range[1] * (1.0 - favoured);
+                child.layers[j].weight_range[1] = child_w_average + p2_w_average;
+            }
+            if self.alter_lower_weight_limit == true {
+                child_w_average = child.layers[j].weight_range[0] * favoured;
+                p2_w_average = parent2.layers[j].weight_range[0] * (1.0 - favoured);
+                child.layers[j].weight_range[0] = child_w_average + p2_w_average;
+                if child.layers[j].weight_range[0] >= child.layers[j].weight_range[1] {
+                    child.layers[j].weight_range[1] = child.layers[j].weight_range[0] + 0.1;
                 }
             }
         }

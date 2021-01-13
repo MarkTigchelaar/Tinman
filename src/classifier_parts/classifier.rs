@@ -25,7 +25,7 @@ impl Classifier {
         let fave_drop : f64 = 0.05;
         Classifier {
             breeder : Breeder::new(temp_drop, fave_drop),
-            test_train_cutoff_idx : 75,
+            test_train_cutoff_idx : 1,
             training_rounds_per_train_epoch : 1,
             max_train_epochs_per_config_epoch : 1,
             max_config_epochs : 1,
