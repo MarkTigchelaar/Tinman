@@ -8,5 +8,5 @@ pub use data_and_config::dataset::DataSet;
 pub use data_and_config::test_config::{TestConfig, Test};
 pub use classifier_parts::nnet_trainer::NNetTrainer;
 pub use classifier_parts::breeder::Breeder;
-pub use classifier_parts::classifier::Classifier;
+//pub use classifier_parts::classifier::Classifier;
 pub mod prelude;

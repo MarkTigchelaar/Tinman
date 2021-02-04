@@ -19,6 +19,21 @@ impl Node {
             delta : 0.0
         }
     }
+    pub fn update_state(&mut self, new_weights : &Vec<f64>) {
+        if new_weights.len() > self.weights.len() {
+            while self.weights.len() < new_weights.len() {
+                self.weights.push(0.0);
+                self.prev_weights.push(0.0);
+            }
+        } else if new_weights.len() < self.weights.len() {
+            self.weights.resize(new_weights.len(), 0.0);
+            self.prev_weights.resize(new_weights.len(), 0.0);
+        }
+        for i in 0 .. new_weights.len() {
+            self.weights[i] = new_weights[i];
+            self.prev_weights[i] = 0.0;
+        }
+    }
 
     pub fn input_layer_forward(&mut self, input : &Vec<f64>, activator : &mut Activator, bias : f64) {
         let mut result : f64 = 0.0;

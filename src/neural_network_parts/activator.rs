@@ -1,15 +1,20 @@
 
-use std::f64::consts::E;
+use std::f64::consts::{E, PI};
+
+
 use super::nnet_errors::{
     set_act_fn_code_out_of_bounds, 
     fn_name_not_found
 };
 
+const LAMBDA : f64 = 1.6732632423543772848170429916717;
+const ALPHA : f64 = 1.0507009873554804934193349852946;
+
 pub struct Activator {
-    fn_names : [String; 7],
+    fn_names : [String; 12],
     activation_fn_code : usize,
-    activation_fns : [fn(f64) -> f64; 7],
-    activation_prime_fns : [fn(f64) -> f64; 7]
+    activation_fns : [fn(f64) -> f64; 12],
+    activation_prime_fns : [fn(f64) -> f64; 12]
 }
 
 impl Activator {
@@ -23,7 +28,12 @@ impl Activator {
                 "tanh".to_string(),
                 "sqnl".to_string(),
                 "arctan".to_string(),
-                "lrelu".to_string()
+                "lrelu".to_string(),
+                "elu".to_string(),
+                "selu".to_string(),
+                "gelu".to_string(),
+                "softplus".to_string(),
+                "swish".to_string()
             ],
             activation_fns : [
                 default,
@@ -32,7 +42,12 @@ impl Activator {
                 tanh,
                 sqnl,
                 arctan,
-                lrelu
+                lrelu,
+                elu,
+                selu,
+                gelu,
+                softplus,
+                swish
             ],
             activation_prime_fns : [
                 default_prime,
@@ -41,7 +56,12 @@ impl Activator {
                 tanh_prime,
                 sqnl_prime,
                 arctan_prime,
-                lrelu_prime
+                lrelu_prime,
+                elu_prime,
+                selu_prime,
+                gelu_prime,
+                softplus_prime,
+                swish
             ]
         }
     }
@@ -88,7 +108,7 @@ fn default_prime(x : f64) -> f64 {
     x
 }
 
-fn sigmoid (x : f64) -> f64 {
+fn sigmoid(x : f64) -> f64 {
     if x > 0.0 {
         return 1. / ( 1. + ( E.powf( - x ) ) )
     }
@@ -96,34 +116,38 @@ fn sigmoid (x : f64) -> f64 {
     return temp / (1.0 + temp)
 }
 
-fn sigmoid_prime (x : f64) -> f64 {
+fn sigmoid_prime(x : f64) -> f64 {
     let sig = sigmoid(x);
     sig * (1. - sig)
 }
 
-fn binary_step (x : f64) -> f64 {
+fn binary_step(x : f64) -> f64 {
     if x >= 0. {
         return 1.
     }
     return -1.
 }
 
-fn binary_step_prime (x : f64) -> f64 {
+fn binary_step_prime(x : f64) -> f64 {
     x
 }
 
-fn tanh (x : f64) -> f64 {
+fn tanh(x : f64) -> f64 {
     let a = E.powf(x);
     let b = E.powf(-x);
     (a - b) / (a + b)
 }
 
-fn tanh_prime (x : f64) -> f64 {
+fn tanh_prime(x : f64) -> f64 {
     let tanh = tanh(x);
     1. - tanh.powi(2)
 }
 
-fn sqnl (x : f64) -> f64 {
+fn sech(x : f64) -> f64 {
+    2.0 / (E.powf(x) + E.powf(-x))
+}
+
+fn sqnl(x : f64) -> f64 {
     if x > 2. {
         return 0.
     } else if (0. <= x) & (x <= 2.) {
@@ -135,7 +159,7 @@ fn sqnl (x : f64) -> f64 {
     }
 }
 
-fn sqnl_prime (x : f64) -> f64 {
+fn sqnl_prime(x : f64) -> f64 {
     if x > 2. {
         return 0.
     } else if (0. <= x) & (x <= 2.) {
@@ -147,24 +171,86 @@ fn sqnl_prime (x : f64) -> f64 {
     }
 }
 
-fn arctan (x : f64) -> f64 {
+fn arctan(x : f64) -> f64 {
     x.atan()
 }
 
-fn arctan_prime (x : f64) -> f64 {
+fn arctan_prime(x : f64) -> f64 {
     1. / (x.powi(2) + 1.)
 }
 
-fn lrelu (x : f64) -> f64 {
+fn lrelu(x : f64) -> f64 {
     if x < 0. {
         return 0.01 * x
     }
     x
 }
 
-fn lrelu_prime (x : f64) -> f64 {
+fn lrelu_prime(x : f64) -> f64 {
     if x < 0. {
         return 0.01
     }
     1.
+}
+
+fn elu(x : f64) -> f64 {
+    if x <= 0.0 {
+        ALPHA * (E.powf( x ) - 1.0)
+    } else {
+        x
+    }
+}
+
+fn elu_prime(x : f64) -> f64 {
+    if x <= 0.0 {
+        elu(x) + ALPHA
+    } else {
+        1.0
+    }
+}
+
+fn selu(x : f64) -> f64 {
+    if x <= 0.0 {
+        LAMBDA * (E.powf( x ) - 1.0)
+    } else {
+        ALPHA * x
+    }
+}
+
+fn selu_prime(x : f64) -> f64 {
+    if x <= 0.0 {
+        elu(x) + LAMBDA
+    } else {
+        ALPHA
+    }
+}
+
+fn gelu(x : f64) -> f64 {
+    0.5 * x * (1.0 + tanh((2.0 / PI).sqrt() * (x + (0.044715 * ( x * x * x )))))
+}
+
+fn gelu_prime(x : f64) -> f64  {
+    let term1 = 0.0356774 * x * x * x;
+    let term2 = 0.398942 * x;
+    let term3 = 0.797885 * x;
+    let term4 = 0.0535161  * x * x * x;
+    let mut hyp_secant = sech(term1 + term3);
+    hyp_secant *= hyp_secant;
+    0.5 * tanh(term1 + term3) + (term4 + term2) * hyp_secant + 0.5
+}
+
+fn softplus(x : f64) -> f64 {
+    (1.0 + E.powf( x )).ln()
+}
+
+fn softplus_prime(x : f64) -> f64 {
+    sigmoid(x)
+}
+
+fn swish(x : f64) -> f64 {
+    x * sigmoid(x)
+}
+
+fn swish_prime(x : f64) -> f64 {
+    x * sigmoid_prime(x) + sigmoid(x)
 }

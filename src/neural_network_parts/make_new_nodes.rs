@@ -17,9 +17,10 @@ pub fn make_new_nodes(layer_settings : &LayerSettings, new_nodes : &mut Vec<Node
                 if weight_vectors[i].len() != input_size {
                     panic!(weights_node_count_mismatch());
                 }
-                let mut weights : Vec<f64> = Vec::new();
+                let mut weights : Vec<f64> = vec![0.0; weight_vectors[i].len()];
                 for j in 0 .. weight_vectors[i].len() {
-                    weights.push(weight_vectors[i][j]);
+                    //weights.push(weight_vectors[i][j]);
+                    weights[j] = weight_vectors[i][j];
                 }
                 new_nodes.push(Node::new(weights));
             }

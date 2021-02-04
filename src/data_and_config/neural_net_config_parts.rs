@@ -15,6 +15,7 @@ pub struct LayerSettings {
 pub struct NeuralNetSettings {
     pub query_id : usize,
     pub config_id : usize,
+    pub accuracy : f64,
     pub input_size : usize,
     pub layers : Vec<LayerSettings>
 }

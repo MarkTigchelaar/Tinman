@@ -3,8 +3,10 @@ use super::node::Node;
 use super::layer::Layer;
 use super::make_new_nodes::make_new_nodes;
 use super::nnet_errors::failed_prediction;
-use super::super::data_and_config::neural_net_config_parts::NeuralNetSettings;
-
+use super::super::data_and_config::neural_net_config_parts::{
+    NeuralNetSettings,
+    LayerSettings
+};
 
 pub struct NeuralNetwork {
     activator : Activator,
@@ -62,6 +64,21 @@ impl NeuralNetwork {
         }
     }
 
+    pub fn get_settings(&mut self) -> NeuralNetSettings {
+        let mut layer_settings : Vec<LayerSettings> = Vec::new();
+        for i in 0 .. self.layers.len() {
+            continue;
+        }
+        let mut settings : NeuralNetSettings = NeuralNetSettings {
+            query_id : self.query_id,
+            config_id : self.config_id,
+            input_size : self.input_size,
+            accuracy : 0.0,
+            layers : layer_settings
+        };
+        settings
+    }
+
     pub fn forward(&mut self, inputs: &Vec<f64>) {
         self.layers[0].input_layer_forward(
             inputs, 
@@ -104,5 +121,19 @@ impl NeuralNetwork {
 
     pub fn get_id(&self) -> usize {
         self.config_id
+    }
+
+    pub fn update_state(&mut self, current_default : &NeuralNetSettings) {
+        self.config_id = current_default.config_id;
+        self.query_id = current_default.query_id;
+        let layer_settings : &Vec<LayerSettings> = &current_default.layers;
+        if layer_settings.len() != self.layers.len() {
+            panic!("Updating settings does not match number of layers");
+        }
+        for i in 0 .. self.layers.len() {
+            let layer_setting = &layer_settings[i];
+            let fn_code = self.activator.get_fn_code_by_name(&layer_setting.activation_function);
+            self.layers[i].update_state(layer_setting, fn_code, &mut self.nodes);
+        }
     }
 }

@@ -2,7 +2,6 @@ use super::activator::Activator;
 use super::node::Node;
 use super::super::data_and_config::neural_net_config_parts::LayerSettings;
 
-
 pub struct Layer {
     learning_rate : f64,
     activation_function_code : usize,
@@ -109,6 +108,30 @@ impl Layer {
                 let adjusted_delta_w : f64 = self.learning_rate * delta_w;
                 nodes[j].set_weight_at(i, (self.learning_rate * delta_w) + momentum_adjustment);
                 nodes[j].set_prev_weight_at(i, adjusted_delta_w + momentum_adjustment);
+            }
+        }
+    }
+
+    pub fn update_state(
+        &mut self, 
+        default_settings : &LayerSettings, 
+        fn_code : usize,
+        nodes : &mut Vec<Node>
+    )
+    {
+        self.learning_rate = default_settings.learning_rate;
+        self.activation_function_code = fn_code;
+        self.momentum = default_settings.momentum;
+        self.bias = default_settings.bias;
+        self.high = default_settings.weight_range[1];
+        self.low = default_settings.weight_range[0];
+        match &default_settings.layer_weights {
+            Some(weights) => {
+                for i in self.nodes_start_index .. self.nodes_stop_index {
+                    nodes[i].update_state(&weights[i- self.nodes_start_index]);
+                }
+            } None => {
+                panic!("attempting to update state, found no weight vectors");
             }
         }
     }
