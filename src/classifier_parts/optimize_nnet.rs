@@ -627,16 +627,10 @@ fn validate_and_adjust_parameters(settings : &mut InternalSettings) {
         let low : f64 = layers[i].weight_range[0];
         let high : f64 = layers[i].weight_range[1];
         let mut new_layer_weights : Vec<Vec<f64>> = Vec::new();
-        //println!("length of each individual weight vector:");
         for j in 0 .. layers[i].output_units {
             new_layer_weights.push(vec![rng.gen_range(low, high); input_size]);
-            //println!("length: {}", new_layer_weights[j].len());
         }
-        //println!("input size: {}, weights length: {}", input_size, new_layer_weights.len());
         layers[i].layer_weights = Some(new_layer_weights);
-        
-        
-
         input_size = layers[i].output_units;
     }
     if settings.optimizer_params.winners_per_round < 2 {
